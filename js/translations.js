@@ -15,8 +15,7 @@ const translations = {
     total_teachers: "إجمالي المعلمين",
     avg_grade: "متوسط الدرجات",
     attendance_rate: "معدل الحضور",
-    
-    // Charts and Statistics
+
     students_by_class: "توزيع الطلاب حسب الصف",
     grades_distribution: "توزيع الدرجات",
     attendance_trend: "اتجاه الحضور الشهري",
@@ -24,11 +23,11 @@ const translations = {
     last_7_days: "آخر 7 أيام",
     last_30_days: "آخر 30 يوم",
     last_3_months: "آخر 3 أشهر",
-    
+
     // Quick Actions
     quick_actions: "إجراءات سريعة",
     take_attendance: "تسجيل الحضور",
-    
+
     // Advanced Search and Filters
     all_classes: "جميع الصفوف",
     all_ages: "جميع الأعمار",
@@ -39,7 +38,7 @@ const translations = {
     students_found: "طالب موجود",
     teachers_found: "معلم موجود",
     grades_found: "درجة موجودة",
-    
+
     students_management: "إدارة الطلاب",
     student_name: "اسم الطالب",
     student_name_placeholder: "أدخل اسم الطالب الكامل",
@@ -59,7 +58,7 @@ const translations = {
     search_students: "البحث بالاسم أو الصف...",
     name: "الاسم",
     actions: "الإجراءات",
-    
+
     teachers_management: "إدارة المعلمين",
     teacher_name: "اسم المعلم",
     teacher_name_placeholder: "أدخل اسم المعلم الكامل",
@@ -69,7 +68,7 @@ const translations = {
     email_placeholder: "أدخل البريد الإلكتروني",
     add_teacher: "إضافة معلم",
     search_teachers: "البحث بالاسم أو المادة...",
-    
+
     grades_management: "إدارة الدرجات",
     select_student: "اختر الطالب",
     select_student_option: "اختر الطالب",
@@ -80,12 +79,12 @@ const translations = {
     search_grades: "البحث بالطالب أو المادة...",
     student: "الطالب",
     grade: "الدرجة",
-    
+
     attendance_management: "إدارة الحضور",
     load_attendance: "تحميل قائمة الحضور",
     save_attendance: "حفظ الحضور",
     attendance_for: "حضور",
-    
+
     reports_title: "التقارير",
     report_type: "نوع التقرير",
     students_report: "تقرير الطلاب",
@@ -98,28 +97,28 @@ const translations = {
     total_grades: "إجمالي الدرجات",
     total_records: "إجمالي السجلات",
     status: "الحالة",
-    
+
     edit: "تعديل",
     save: "حفظ",
     cancel: "إلغاء",
     delete: "حذف",
     present: "حاضر",
     absent: "غائب",
-    
+
     success_add: "تم الإضافة بنجاح!",
     success_update: "تم التحديث بنجاح!",
     success_delete: "تم الحذف بنجاح!",
     success_save: "تم الحفظ بنجاح!",
     success_login: "تم تسجيل الدخول بنجاح!",
     success_logout: "تم تسجيل الخروج بنجاح!",
-    
+
     error_fill_fields: "يرجى ملء جميع الحقول المطلوبة",
     error_invalid_email: "يرجى إدخال بريد إلكتروني صحيح",
     error_invalid_phone: "يرجى إدخال رقم هاتف صحيح",
     error_invalid_age: "يرجى إدخال عمر صحيح",
     error_invalid_grade: "يرجى إدخال درجة صحيحة (0-100)",
     confirm_delete: "هل أنت متأكد من الحذف؟",
-    
+
     // Login i18n
     login_title: "تسجيل الدخول",
     login_subtitle: "اختر الدور وأدخل بيانات الاعتماد",
@@ -155,7 +154,7 @@ const translations = {
     total_teachers: "Total Teachers",
     avg_grade: "Average Grade",
     attendance_rate: "Attendance Rate",
-    
+
     // Charts and Statistics
     students_by_class: "Students by Class",
     grades_distribution: "Grades Distribution",
@@ -164,11 +163,11 @@ const translations = {
     last_7_days: "Last 7 Days",
     last_30_days: "Last 30 Days",
     last_3_months: "Last 3 Months",
-    
+
     // Quick Actions
     quick_actions: "Quick Actions",
     take_attendance: "Take Attendance",
-    
+
     // Advanced Search and Filters
     all_classes: "All Classes",
     all_ages: "All Ages",
@@ -179,7 +178,7 @@ const translations = {
     students_found: "students found",
     teachers_found: "teachers found",
     grades_found: "grades found",
-    
+
     students_management: "Students Management",
     student_name: "Student Name",
     student_name_placeholder: "Enter full student name",
@@ -199,7 +198,7 @@ const translations = {
     search_students: "Search by name or class...",
     name: "Name",
     actions: "Actions",
-    
+
     teachers_management: "Teachers Management",
     teacher_name: "Teacher Name",
     teacher_name_placeholder: "Enter full teacher name",
@@ -209,7 +208,7 @@ const translations = {
     email_placeholder: "Enter email address",
     add_teacher: "Add Teacher",
     search_teachers: "Search by name or subject...",
-    
+
     grades_management: "Grades Management",
     select_student: "Select Student",
     select_student_option: "Select Student",
@@ -220,12 +219,12 @@ const translations = {
     search_grades: "Search by student or subject...",
     student: "Student",
     grade: "Grade",
-    
+
     attendance_management: "Attendance Management",
     load_attendance: "Load Attendance List",
     save_attendance: "Save Attendance",
     attendance_for: "Attendance for",
-    
+
     reports_title: "Reports",
     report_type: "Report Type",
     students_report: "Students Report",
@@ -238,28 +237,28 @@ const translations = {
     total_grades: "Total Grades",
     total_records: "Total Records",
     status: "Status",
-    
+
     edit: "Edit",
     save: "Save",
     cancel: "Cancel",
     delete: "Delete",
     present: "Present",
     absent: "Absent",
-    
+
     success_add: "Added successfully!",
     success_update: "Updated successfully!",
     success_delete: "Deleted successfully!",
     success_save: "Saved successfully!",
     success_login: "Logged in successfully!",
     success_logout: "Logged out successfully!",
-    
+
     error_fill_fields: "Please fill all required fields",
     error_invalid_email: "Please enter a valid email address",
     error_invalid_phone: "Please enter a valid phone number",
     error_invalid_age: "Please enter a valid age",
     error_invalid_grade: "Please enter a valid grade (0-100)",
     confirm_delete: "Are you sure you want to delete?",
-    
+
     // Login i18n
     login_title: "Login",
     login_subtitle: "Choose a role and enter credentials",

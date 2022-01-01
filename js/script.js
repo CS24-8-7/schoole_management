@@ -1,7 +1,6 @@
 let currentLanguage = localStorage.getItem('language') || 'ar';
 let currentTheme = localStorage.getItem('theme') || 'light';
 
-// Simple demo accounts
 const demoUsers = [
     { role: 'admin', username: 'admin', password: 'admin123', name: 'المدير' },
     { role: 'teacher', username: 'teacher', password: 'teach123', name: 'معلم' },
@@ -28,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
     bindLoginUI();
     applySessionUI();
     initializeCharts();
-    
+
     // Set default dates
     const today = new Date().toISOString().split('T')[0];
     const gradeDate = document.getElementById('gradeDate');
@@ -42,7 +41,7 @@ function initializeSidebar() {
     const sidebar = document.getElementById('sidebar');
     const appContainer = document.getElementById('appContainer');
     const isSidebarOpen = localStorage.getItem('sidebarOpen') !== 'false';
-    
+
     if (!isSidebarOpen) {
         sidebar.classList.add('closed');
     }
@@ -52,12 +51,12 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const appContainer = document.getElementById('appContainer');
     const isOpen = !sidebar.classList.contains('closed');
-    
+
     sidebar.classList.toggle('closed');
     if (appContainer) {
         appContainer.classList.toggle('sidebar-open', !isOpen);
     }
-    
+
     localStorage.setItem('sidebarOpen', isOpen ? 'false' : 'true');
 }
 
@@ -383,7 +382,7 @@ function initializeAttendanceChart() {
                         font: {
                             family: currentLanguage === 'ar' ? 'Segoe UI' : 'Segoe UI'
                         },
-                        callback: function(value) {
+                        callback: function (value) {
                             return value + '%';
                         }
                     },
@@ -482,21 +481,21 @@ function initializeSubjectsChart() {
 function getStudentsByClassData() {
     const classCounts = {};
     const classNames = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'];
-    
+
     classNames.forEach(className => {
         classCounts[className] = 0;
     });
-    
+
     students.forEach(student => {
         if (classCounts.hasOwnProperty(student.class)) {
             classCounts[student.class]++;
         }
     });
-    
-    const labels = classNames.map(className => 
+
+    const labels = classNames.map(className =>
         currentLanguage === 'ar' ? className : getEnglishGradeName(className)
     );
-    
+
     return {
         labels: labels,
         values: Object.values(classCounts)
@@ -511,15 +510,15 @@ function getGradesDistributionData() {
         'مقبول (60-69)': 0,
         'ضعيف (أقل من 60)': 0
     };
-    
+
     const selectedClass = document.getElementById('gradesChartFilter')?.value || 'all';
-    
+
     grades.forEach(grade => {
         if (selectedClass !== 'all') {
             const student = students.find(s => s.id === grade.studentId);
             if (!student || student.class !== selectedClass) return;
         }
-        
+
         const value = parseFloat(grade.grade);
         if (value >= 90) gradeRanges['ممتاز (90-100)']++;
         else if (value >= 80) gradeRanges['جيد جداً (80-89)']++;
@@ -527,11 +526,11 @@ function getGradesDistributionData() {
         else if (value >= 60) gradeRanges['مقبول (60-69)']++;
         else gradeRanges['ضعيف (أقل من 60)']++;
     });
-    
-    const labels = Object.keys(gradeRanges).map(range => 
+
+    const labels = Object.keys(gradeRanges).map(range =>
         currentLanguage === 'ar' ? range : getEnglishGradeRange(range)
     );
-    
+
     return {
         labels: labels,
         values: Object.values(gradeRanges)
@@ -542,23 +541,23 @@ function getAttendanceTrendData() {
     const period = parseInt(document.getElementById('attendanceChartPeriod')?.value || '30');
     const dates = [];
     const attendanceRates = [];
-    
+
     const today = new Date();
     for (let i = period - 1; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
-        
+
         const dayAttendance = attendance.filter(a => a.date === dateStr);
         const totalStudents = students.length;
         const presentStudents = dayAttendance.filter(a => a.status === 'present').length;
-        
+
         const rate = totalStudents > 0 ? Math.round((presentStudents / totalStudents) * 100) : 0;
-        
+
         dates.push(formatDateForChart(date));
         attendanceRates.push(rate);
     }
-    
+
     return {
         labels: dates,
         values: attendanceRates
@@ -567,22 +566,22 @@ function getAttendanceTrendData() {
 
 function getTopSubjectsData() {
     const subjectGrades = {};
-    
+
     grades.forEach(grade => {
         if (!subjectGrades[grade.subject]) {
             subjectGrades[grade.subject] = [];
         }
         subjectGrades[grade.subject].push(parseFloat(grade.grade));
     });
-    
+
     const subjectAverages = Object.keys(subjectGrades).map(subject => ({
         subject: subject,
         average: subjectGrades[subject].reduce((a, b) => a + b, 0) / subjectGrades[subject].length
     }));
-    
+
     subjectAverages.sort((a, b) => b.average - a.average);
     const topSubjects = subjectAverages.slice(0, 5);
-    
+
     return {
         labels: topSubjects.map(s => s.subject),
         values: topSubjects.map(s => Math.round(s.average))
@@ -610,7 +609,7 @@ function updateCharts() {
 }
 
 function refreshChart(chartName) {
-    switch(chartName) {
+    switch (chartName) {
         case 'studentsChart':
             if (studentsChart) {
                 studentsChart.destroy();
@@ -773,17 +772,17 @@ function addStudent() {
 function displayStudents() {
     const tbody = document.getElementById('studentsTableBody');
     if (!tbody) return;
-    
+
     const searchTerm = (document.getElementById('studentSearch')?.value || '').toLowerCase();
     const classFilter = document.getElementById('studentClassFilter')?.value || '';
     const ageFilter = document.getElementById('studentAgeFilter')?.value || '';
 
     let filteredStudents = students.filter(student => {
         const matchesSearch = student.name.toLowerCase().includes(searchTerm) ||
-                            student.class.toLowerCase().includes(searchTerm);
+            student.class.toLowerCase().includes(searchTerm);
         const matchesClass = !classFilter || student.class === classFilter;
         const matchesAge = !ageFilter || isAgeInRange(student.age, ageFilter);
-        
+
         return matchesSearch && matchesClass && matchesAge;
     });
 
@@ -906,15 +905,15 @@ function addTeacher() {
 function displayTeachers() {
     const tbody = document.getElementById('teachersTableBody');
     if (!tbody) return;
-    
+
     const searchTerm = (document.getElementById('teacherSearch')?.value || '').toLowerCase();
     const subjectFilter = document.getElementById('teacherSubjectFilter')?.value || '';
 
     const filteredTeachers = teachers.filter(teacher => {
         const matchesSearch = teacher.name.toLowerCase().includes(searchTerm) ||
-                            teacher.subject.toLowerCase().includes(searchTerm);
+            teacher.subject.toLowerCase().includes(searchTerm);
         const matchesSubject = !subjectFilter || teacher.subject === subjectFilter;
-        
+
         return matchesSearch && matchesSubject;
     });
 
@@ -942,10 +941,10 @@ function displayTeachers() {
 function updateTeacherSubjectFilter() {
     const subjectFilter = document.getElementById('teacherSubjectFilter');
     if (!subjectFilter) return;
-    
+
     const subjects = [...new Set(teachers.map(t => t.subject))];
     const currentValue = subjectFilter.value;
-    
+
     subjectFilter.innerHTML = `<option value="">${translations[currentLanguage].all_subjects || 'جميع المواد'}</option>`;
     subjects.forEach(subject => {
         const option = document.createElement('option');
@@ -953,7 +952,7 @@ function updateTeacherSubjectFilter() {
         option.textContent = subject;
         subjectFilter.appendChild(option);
     });
-    
+
     subjectFilter.value = currentValue;
 }
 
@@ -1033,7 +1032,7 @@ function addGrade() {
 function displayGrades() {
     const tbody = document.getElementById('gradesTableBody');
     if (!tbody) return;
-    
+
     const searchTerm = (document.getElementById('gradeSearch')?.value || '').toLowerCase();
     const studentFilter = document.getElementById('gradeStudentFilter')?.value || '';
     const subjectFilter = document.getElementById('gradeSubjectFilter')?.value || '';
@@ -1042,13 +1041,13 @@ function displayGrades() {
     let filteredGrades = grades.filter(grade => {
         const student = students.find(s => s.id === grade.studentId);
         if (!student) return false;
-        
+
         const matchesSearch = student.name.toLowerCase().includes(searchTerm) ||
-                            grade.subject.toLowerCase().includes(searchTerm);
+            grade.subject.toLowerCase().includes(searchTerm);
         const matchesStudent = !studentFilter || grade.studentId.toString() === studentFilter;
         const matchesSubject = !subjectFilter || grade.subject === subjectFilter;
         const matchesRange = !rangeFilter || isGradeInRange(grade.grade, rangeFilter);
-        
+
         return matchesSearch && matchesStudent && matchesSubject && matchesRange;
     });
 
@@ -1103,27 +1102,27 @@ function updateGradeFilters() {
 function updateGradeStudentFilter() {
     const studentFilter = document.getElementById('gradeStudentFilter');
     if (!studentFilter) return;
-    
+
     const currentValue = studentFilter.value;
     studentFilter.innerHTML = `<option value="">${translations[currentLanguage].all_students || 'جميع الطلاب'}</option>`;
-    
+
     students.forEach(student => {
         const option = document.createElement('option');
         option.value = student.id;
         option.textContent = student.name;
         studentFilter.appendChild(option);
     });
-    
+
     studentFilter.value = currentValue;
 }
 
 function updateGradeSubjectFilter() {
     const subjectFilter = document.getElementById('gradeSubjectFilter');
     if (!subjectFilter) return;
-    
+
     const subjects = [...new Set(grades.map(g => g.subject))];
     const currentValue = subjectFilter.value;
-    
+
     subjectFilter.innerHTML = `<option value="">${translations[currentLanguage].all_subjects || 'جميع المواد'}</option>`;
     subjects.forEach(subject => {
         const option = document.createElement('option');
@@ -1131,7 +1130,7 @@ function updateGradeSubjectFilter() {
         option.textContent = subject;
         subjectFilter.appendChild(option);
     });
-    
+
     subjectFilter.value = currentValue;
 }
 
@@ -1205,17 +1204,17 @@ function loadData() {
 function updateDashboard() {
     document.getElementById('totalStudents').textContent = students.length;
     document.getElementById('totalTeachers').textContent = teachers.length;
-    
-    const avgGrade = grades.length > 0 ? 
+
+    const avgGrade = grades.length > 0 ?
         Math.round(grades.reduce((sum, grade) => sum + parseFloat(grade.grade), 0) / grades.length) : 0;
     document.getElementById('avgGrade').textContent = avgGrade;
-    
+
     const totalAttendanceRecords = attendance.length;
     const presentRecords = attendance.filter(a => a.status === 'present').length;
-    const attendanceRate = totalAttendanceRecords > 0 ? 
+    const attendanceRate = totalAttendanceRecords > 0 ?
         Math.round((presentRecords / totalAttendanceRecords) * 100) : 0;
     document.getElementById('attendanceRate').textContent = attendanceRate + '%';
-    
+
     // Update trends (simplified calculation)
     updateTrends();
 }
@@ -1226,7 +1225,7 @@ function updateTrends() {
     const teachersTrend = document.getElementById('teachersTrend');
     const gradesTrend = document.getElementById('gradesTrend');
     const attendanceTrend = document.getElementById('attendanceTrend');
-    
+
     if (studentsTrend) studentsTrend.textContent = '+' + Math.floor(Math.random() * 10) + '%';
     if (teachersTrend) teachersTrend.textContent = '+' + Math.floor(Math.random() * 5) + '%';
     if (gradesTrend) gradesTrend.textContent = '+' + Math.floor(Math.random() * 8) + '%';
@@ -1236,17 +1235,17 @@ function updateTrends() {
 function updateGradeStudentOptions() {
     const gradeStudent = document.getElementById('gradeStudent');
     if (!gradeStudent) return;
-    
+
     const currentValue = gradeStudent.value;
     gradeStudent.innerHTML = `<option value="">${translations[currentLanguage].select_student_option}</option>`;
-    
+
     students.forEach(student => {
         const option = document.createElement('option');
         option.value = student.id;
         option.textContent = student.name;
         gradeStudent.appendChild(option);
     });
-    
+
     gradeStudent.value = currentValue;
 }
 
@@ -1255,24 +1254,24 @@ function showTab(tabName, event) {
     // Hide all tab contents
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(content => content.classList.remove('active'));
-    
+
     // Remove active class from all tab buttons
     const tabButtons = document.querySelectorAll('.tab-btn');
     tabButtons.forEach(button => button.classList.remove('active'));
-    
+
     // Show selected tab content
     const selectedTab = document.getElementById(tabName);
     if (selectedTab) {
         selectedTab.classList.add('active');
     }
-    
+
     // Add active class to clicked button
     if (event && event.target) {
         event.target.classList.add('active');
     }
-    
+
     // Update displays when switching tabs
-    switch(tabName) {
+    switch (tabName) {
         case 'dashboard':
             updateDashboard();
             updateCharts();
@@ -1300,7 +1299,7 @@ function closeModal() {
 function saveEdit() {
     const editType = window.currentEditType;
     const editId = window.currentEditId;
-    
+
     if (editType === 'student') {
         const student = students.find(s => s.id === editId);
         if (student) {
@@ -1308,7 +1307,7 @@ function saveEdit() {
             student.age = parseInt(document.getElementById('editStudentAge').value);
             student.class = document.getElementById('editStudentClass').value;
             student.phone = document.getElementById('editStudentPhone').value.trim();
-            
+
             saveData();
             displayStudents();
             updateDashboard();
@@ -1323,7 +1322,7 @@ function saveEdit() {
             teacher.subject = document.getElementById('editTeacherSubject').value.trim();
             teacher.phone = document.getElementById('editTeacherPhone').value.trim();
             teacher.email = document.getElementById('editTeacherEmail').value.trim();
-            
+
             saveData();
             displayTeachers();
             updateDashboard();
@@ -1337,7 +1336,7 @@ function saveEdit() {
             grade.subject = document.getElementById('editGradeSubject').value.trim();
             grade.grade = parseFloat(document.getElementById('editGradeValue').value);
             grade.date = document.getElementById('editGradeDate').value;
-            
+
             saveData();
             displayGrades();
             updateDashboard();
@@ -1346,7 +1345,7 @@ function saveEdit() {
             showAlert(translations[currentLanguage].success_update);
         }
     }
-    
+
     closeModal();
 }
 
@@ -1366,15 +1365,15 @@ function bindLoginUI() {
 
 function handleLogin(event) {
     event.preventDefault();
-    
+
     const role = document.getElementById('loginRole').value;
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
-    
-    const user = demoUsers.find(u => 
+
+    const user = demoUsers.find(u =>
         u.role === role && u.username === username && u.password === password
     );
-    
+
     if (user) {
         currentUser = user;
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -1384,7 +1383,7 @@ function handleLogin(event) {
     } else {
         showAlert(translations[currentLanguage].login_failed, 'danger');
     }
-    
+
     return false;
 }
 
@@ -1406,7 +1405,7 @@ function applySessionUI() {
             element.classList.add('role-hidden');
         }
     });
-    
+
     // Update user info display
     const userInfo = document.querySelector('.user-info');
     if (userInfo && currentUser) {
@@ -1417,7 +1416,7 @@ function applySessionUI() {
 function renderDemoAccounts() {
     const demoAccountsDiv = document.getElementById('demoAccounts');
     if (!demoAccountsDiv) return;
-    
+
     const title = currentLanguage === 'ar' ? 'حسابات تجريبية:' : 'Demo Accounts:';
     demoAccountsDiv.innerHTML = `
         <h4>${title}</h4>
@@ -1432,7 +1431,7 @@ function renderDemoAccounts() {
 function updateLoginHint() {
     const loginHint = document.getElementById('loginHint');
     const selectedRole = document.getElementById('loginRole')?.value || 'admin';
-    
+
     if (loginHint) {
         const hintKey = `login_hint_${selectedRole}`;
         loginHint.textContent = translations[currentLanguage][hintKey] || '';
@@ -1443,25 +1442,25 @@ function updateLoginHint() {
 function loadAttendanceList() {
     const date = document.getElementById('attendanceDate').value;
     const className = document.getElementById('attendanceClass').value;
-    
+
     if (!date || !className) {
         showAlert(translations[currentLanguage].error_fill_fields, 'warning');
         return;
     }
-    
+
     const classStudents = students.filter(s => s.class === className);
     const attendanceList = document.getElementById('attendanceList');
-    
+
     attendanceList.innerHTML = `
         <h3>${translations[currentLanguage].attendance_for || 'حضور'} ${className} - ${formatDate(date)}</h3>
         <div class="attendance-grid">
             ${classStudents.map(student => {
-                const existingRecord = attendance.find(a => 
-                    a.studentId === student.id && a.date === date
-                );
-                const status = existingRecord ? existingRecord.status : 'present';
-                
-                return `
+        const existingRecord = attendance.find(a =>
+            a.studentId === student.id && a.date === date
+        );
+        const status = existingRecord ? existingRecord.status : 'present';
+
+        return `
                     <div class="attendance-item">
                         <span class="student-name">${student.name}</span>
                         <div class="attendance-controls">
@@ -1478,10 +1477,10 @@ function loadAttendanceList() {
                         </div>
                     </div>
                 `;
-            }).join('')}
+    }).join('')}
         </div>
     `;
-    
+
     document.getElementById('saveAttendanceBtn').style.display = 'block';
 }
 
@@ -1489,13 +1488,13 @@ function saveAttendance() {
     const date = document.getElementById('attendanceDate').value;
     const className = document.getElementById('attendanceClass').value;
     const classStudents = students.filter(s => s.class === className);
-    
+
     // Remove existing attendance records for this date and class
     attendance = attendance.filter(a => {
         const student = students.find(s => s.id === a.studentId);
         return !(student && student.class === className && a.date === date);
     });
-    
+
     // Add new attendance records
     classStudents.forEach(student => {
         const statusInput = document.querySelector(`input[name="attendance_${student.id}"]:checked`);
@@ -1508,7 +1507,7 @@ function saveAttendance() {
             });
         }
     });
-    
+
     saveData();
     updateDashboard();
     updateCharts();
@@ -1520,10 +1519,10 @@ function generateReport() {
     const reportType = document.getElementById('reportType').value;
     const classFilter = document.getElementById('reportClass').value;
     const reportContent = document.getElementById('reportContent');
-    
+
     let content = '';
-    
-    switch(reportType) {
+
+    switch (reportType) {
         case 'students':
             content = generateStudentsReport(classFilter);
             break;
@@ -1537,15 +1536,15 @@ function generateReport() {
             content = generateAttendanceReport(classFilter);
             break;
     }
-    
+
     reportContent.innerHTML = content;
     document.getElementById('printReportBtn').style.display = 'block';
 }
 
 function generateStudentsReport(classFilter) {
-    const filteredStudents = classFilter ? 
+    const filteredStudents = classFilter ?
         students.filter(s => s.class === classFilter) : students;
-    
+
     return `
         <div class="report">
             <h3>${translations[currentLanguage].students_report}</h3>
@@ -1605,12 +1604,12 @@ function generateTeachersReport() {
 
 function generateGradesReport(classFilter) {
     let filteredGrades = grades;
-    
+
     if (classFilter) {
         const classStudentIds = students.filter(s => s.class === classFilter).map(s => s.id);
         filteredGrades = grades.filter(g => classStudentIds.includes(g.studentId));
     }
-    
+
     return `
         <div class="report">
             <h3>${translations[currentLanguage].grades_report}</h3>
@@ -1626,8 +1625,8 @@ function generateGradesReport(classFilter) {
                 </thead>
                 <tbody>
                     ${filteredGrades.map(grade => {
-                        const student = students.find(s => s.id === grade.studentId);
-                        return `
+        const student = students.find(s => s.id === grade.studentId);
+        return `
                             <tr>
                                 <td>${student ? student.name : 'غير معروف'}</td>
                                 <td>${grade.subject}</td>
@@ -1635,7 +1634,7 @@ function generateGradesReport(classFilter) {
                                 <td>${formatDate(grade.date)}</td>
                             </tr>
                         `;
-                    }).join('')}
+    }).join('')}
                 </tbody>
             </table>
         </div>
@@ -1644,12 +1643,12 @@ function generateGradesReport(classFilter) {
 
 function generateAttendanceReport(classFilter) {
     let filteredAttendance = attendance;
-    
+
     if (classFilter) {
         const classStudentIds = students.filter(s => s.class === classFilter).map(s => s.id);
         filteredAttendance = attendance.filter(a => classStudentIds.includes(a.studentId));
     }
-    
+
     return `
         <div class="report">
             <h3>${translations[currentLanguage].attendance_report}</h3>
@@ -1664,15 +1663,15 @@ function generateAttendanceReport(classFilter) {
                 </thead>
                 <tbody>
                     ${filteredAttendance.map(record => {
-                        const student = students.find(s => s.id === record.studentId);
-                        return `
+        const student = students.find(s => s.id === record.studentId);
+        return `
                             <tr>
                                 <td>${student ? student.name : 'غير معروف'}</td>
                                 <td>${formatDate(record.date)}</td>
                                 <td>${record.status === 'present' ? translations[currentLanguage].present : translations[currentLanguage].absent}</td>
                             </tr>
                         `;
-                    }).join('')}
+    }).join('')}
                 </tbody>
             </table>
         </div>
