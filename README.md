@@ -1,14 +1,13 @@
-<div align="center">
-  <h1>Supermarket Management System 🛒</h1>
+ <div align="center">
+  <h1> نظام إدارة المدرسة المطور 🛒</h1>
   <p><strong>✅ تم الإكمال: ديسمبر 2022</strong></p>
   <img src="https://img.shields.io/badge/Status-Completed_in_2023-green?logo=github" />
   <br>
 
   <img src="https://github.com/CS24-8-7/Supermarket/blob/main/Supermarket.jpg" />
 </div>
-# نظام إدارة المدرسة المطور
-## Advanced School Management System
 
+## Advanced School Management System
 نظام شامل لإدارة الطلاب والمعلمين والدرجات مع ميزات متقدمة ورسوم بيانية تفاعلية.
 
 ### الميزات الجديدة المضافة:
