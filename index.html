@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="page_title">نظام إدارة المدرسة المطور</title>
+    <style>
+        :root {
+            /* Light Theme */
+            --main-blue: #001f3f;
+            --secondary-blue: #012952;
+            --white: #fff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light-gray: #f8f9fa;
+            --medium-gray: #dee2e6;
+            --dark-gray: #6c757d;
+            --background: #f8f9fa;
+            --text-color: #333;
+            --card-background: #fff;
+            --border-color: #dee2e6;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --main-blue: #4a90e2;
+            --secondary-blue: #357abd;
+            --white: #1a1a1a;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light-gray: #2d2d2d;
+            --medium-gray: #404040;
+            --dark-gray: #b0b0b0;
+            --background: #1a1a1a;
+            --text-color: #e0e0e0;
+            --card-background: #2d2d2d;
+            --border-color: #404040;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text-color);
+            min-height: 100vh;
+            direction: rtl;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body[dir="ltr"] {
+            direction: ltr;
+        }
+
+        .controls-bar {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 2002;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .control-btn {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 45px;
+            height: 45px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-btn:hover {
+            background: var(--main-blue);
+            color: var(--white);
+        }
+
+        .language-selector {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 2001;
+            background: var(--card-background);
+            color: var(--main-blue);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 45px;
+            height: 45px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--main-blue);
+            color: var(--white);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 250px;
+            background: var(--main-blue);
+            color: var(--white);
+            transition: transform 0.3s ease;
+            transform: translateX(0);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body[dir="ltr"] .sidebar {
+            right: auto;
+            left: 0;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.closed {
+            transform: translateX(100%);
+        }
+
+        body[dir="ltr"] .sidebar.closed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar .sidebar-header {
+            padding: 20px 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--white);
+            border-bottom: 1px solid #ffffff33;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .sidebar .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 0 10px;
+        }
+
+        .sidebar .tab-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            width: 100%;
+            font-size: 1.05rem;
+            padding: 12px 15px;
+            text-align: right;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        body[dir="ltr"] .sidebar .tab-btn {
+            text-align: left;
+        }
+
+        .sidebar .tab-btn.active,
+        .sidebar .tab-btn:hover {
+            background: var(--white);
+            color: var(--main-blue);
+        }
+
+        .container {
+            margin-right: 250px;
+            padding: 20px;
+            transition: margin-right 0.3s;
+        }
+
+        body[dir="ltr"] .container {
+            margin-right: 0;
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+        }
+
+        .sidebar.closed~.container {
+            margin-right: 0;
+        }
+
+        body[dir="ltr"] .sidebar.closed~.container {
+            margin-left: 0;
+        }
+
+        .header {
+            text-align: center;
+            color: var(--main-blue);
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--card-background);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--card-background);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--main-blue);
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--main-blue);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: var(--card-background);
+            color: var(--text-color);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--main-blue);
+            box-shadow: 0 0 0 3px rgba(0, 31, 63, 0.15);
+        }
+
+        .phone-group {
+            display: flex;
+        }
+
+        .phone-group select {
+            width: 120px;
+            border-radius: 0 8px 8px 0;
+            border-left: 0;
+        }
+
+        body[dir="ltr"] .phone-group select {
+            border-radius: 8px 0 0 8px;
+            border-left: 1px solid var(--border-color);
+            border-right: 0;
+        }
+
+        .phone-group input {
+            border-radius: 8px 0 0 8px;
+        }
+
+        body[dir="ltr"] .phone-group input {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .btn {
+            background: var(--main-blue);
+            color: var(--white);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: var(--secondary-blue);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        body[dir="ltr"] .data-table th,
+        body[dir="ltr"] .data-table td {
+            text-align: left;
+        }
+
+        .data-table th {
+            background: var(--light-gray);
+            color: var(--main-blue);
+            font-weight: 700;
+        }
+
+        .data-table tr:hover {
+            background: var(--light-gray);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--main-blue);
+        }
+
+        .stat-label {
+            color: var(--dark-gray);
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .search-box {
+            margin: 20px 0;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-background);
+            color: var(--text-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-background);
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            color: var(--dark-gray);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        body[dir="ltr"] .close {
+            left: auto;
+            right: 15px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4000;
+            min-width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .alert-error {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        input.invalid,
+        select.invalid {
+            border-color: var(--danger);
+        }
+
+        input.invalid:focus,
+        select.invalid:focus {
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+        }
+
+        #reportContent {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-background);
+        }
+
+        .attendance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-left: 5px;
+        }
+
+        body[dir="ltr"] .radio-group input[type="radio"] {
+            margin-left: 0;
+            margin-right: 5px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #reportContent,
+            #reportContent * {
+                visibility: visible;
+            }
+
+            #reportContent {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            .btn {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin-right: 0;
+                padding: 10px;
+            }
+
+            body[dir="ltr"] .container {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            body[dir="ltr"] .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.closed {
+                transform: translateX(100%);
+            }
+
+            body[dir="ltr"] .sidebar.closed {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+        <button class="control-btn" id="themeToggle" title="تبديل الثيم">🌙</button>
+        <select class="language-selector" id="languageSelector">
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+
+    <button class="sidebar-toggle" id="sidebarToggler">☰</button>
+    <nav class="sidebar closed" id="sidebar">
+        <div class="sidebar-header" data-translate="school_name">🎓 المدرسة</div>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('dashboard', event)">
+                <span data-translate="dashboard">📊 لوحة التحكم</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('students', event)">
+                <span data-translate="students">👥 الطلاب</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('teachers', event)">
+                <span data-translate="teachers">👨‍🏫 المعلمون</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('grades', event)">
+                <span data-translate="grades">📝 الدرجات</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('attendance', event)">
+                <span data-translate="attendance">📅 الحضور</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('reports', event)">
+                <span data-translate="reports">📋 التقارير</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1 data-translate="main_title">🎓 نظام إدارة المدرسة المطور</h1>
+            <p data-translate="main_subtitle">✨ نظام شامل لإدارة الطلاب والمعلمين والدرجات مع ميزات متقدمة</p>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <!-- لوحة التحكم -->
+        <div id="dashboard" class="tab-content active">
+            <h2 data-translate="dashboard_title">📊 لوحة التحكم الرئيسية</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalStudents">0</div>
+                    <div class="stat-label" data-translate="total_students">👥 إجمالي الطلاب</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTeachers">0</div>
+                    <div class="stat-label" data-translate="total_teachers">👨‍🏫 إجمالي المعلمين</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgGrade">0</div>
+                    <div class="stat-label" data-translate="avg_grade">📊 متوسط الدرجات</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="attendanceRate">0%</div>
+                    <div class="stat-label" data-translate="attendance_rate">📈 معدل الحضور</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- إدارة الطلاب -->
+        <div id="students" class="tab-content">
+            <h2 data-translate="students_management">👥 إدارة الطلاب</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="studentName" data-translate="student_name">👤 اسم الطالب</label>
+                    <input type="text" id="studentName" data-translate-placeholder="student_name_placeholder">
+                    <div class="error-message" id="studentNameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="studentAge" data-translate="age">🎂 العمر</label>
+                    <input type="number" id="studentAge" data-translate-placeholder="age_placeholder">
+                    <div class="error-message" id="studentAgeError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="studentClass" data-translate="class">🏫 الصف</label>
+                    <select id="studentClass">
+                        <option value="" data-translate="select_class">اختر الصف</option>
+                        <option value="الأول" data-translate="first_grade">الأول</option>
+                        <option value="الثاني" data-translate="second_grade">الثاني</option>
+                        <option value="الثالث" data-translate="third_grade">الثالث</option>
+                        <option value="الرابع" data-translate="fourth_grade">الرابع</option>
+                        <option value="الخامس" data-translate="fifth_grade">الخامس</option>
+                        <option value="السادس" data-translate="sixth_grade">السادس</option>
+                    </select>
+                    <div class="error-message" id="studentClassError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="studentPhone" data-translate="phone">📞 رقم الهاتف</label>
+                    <div class="phone-group">
+                        <input type="text" id="studentPhone" data-translate-placeholder="phone_placeholder">
+                        <select id="studentCountryCode"></select>
+                    </div>
+                    <div class="error-message" id="studentPhoneError"></div>
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="addStudent()" data-translate="add_student">➕ إضافة طالب</button>
+            <div class="search-box">
+                <input type="text" id="studentSearch" data-translate-placeholder="search_students" onkeyup="displayStudents()">
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th data-translate="name">👤 الاسم</th>
+                        <th data-translate="age">🎂 العمر</th>
+                        <th data-translate="class">🏫 الصف</th>
+                        <th data-translate="phone">📞 الهاتف</th>
+                        <th data-translate="actions">⚙️ الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- إدارة المعلمين -->
+        <div id="teachers" class="tab-content">
+            <h2 data-translate="teachers_management">👨‍🏫 إدارة المعلمين</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="teacherName" data-translate="teacher_name">👤 اسم المعلم</label>
+                    <input type="text" id="teacherName" data-translate-placeholder="teacher_name_placeholder">
+                    <div class="error-message" id="teacherNameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="teacherSubject" data-translate="subject">📚 المادة</label>
+                    <input type="text" id="teacherSubject" data-translate-placeholder="subject_placeholder">
+                    <div class="error-message" id="teacherSubjectError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="teacherPhone" data-translate="phone">📞 رقم الهاتف</label>
+                    <div class="phone-group">
+                        <input type="text" id="teacherPhone" data-translate-placeholder="phone_placeholder">
+                        <select id="teacherCountryCode"></select>
+                    </div>
+                    <div class="error-message" id="teacherPhoneError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="teacherEmail" data-translate="email">📧 البريد الإلكتروني</label>
+                    <input type="email" id="teacherEmail" data-translate-placeholder="email_placeholder">
+                    <div class="error-message" id="teacherEmailError"></div>
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="addTeacher()" data-translate="add_teacher">➕ إضافة معلم</button>
+            <div class="search-box">
+                <input type="text" id="teacherSearch" data-translate-placeholder="search_teachers" onkeyup="displayTeachers()">
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th data-translate="name">👤 الاسم</th>
+                        <th data-translate="subject">📚 المادة</th>
+                        <th data-translate="phone">📞 الهاتف</th>
+                        <th data-translate="email">📧 البريد الإلكتروني</th>
+                        <th data-translate="actions">⚙️ الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="teachersTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- إدارة الدرجات -->
+        <div id="grades" class="tab-content">
+            <h2 data-translate="grades_management">📝 إدارة الدرجات</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="gradeStudent" data-translate="select_student">👤 اختر الطالب</label>
+                    <select id="gradeStudent">
+                        <option value="" data-translate="select_student_option">اختر الطالب</option>
+                    </select>
+                    <div class="error-message" id="gradeStudentError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="gradeSubject" data-translate="subject">📚 المادة</label>
+                    <input type="text" id="gradeSubject" data-translate-placeholder="subject_placeholder">
+                    <div class="error-message" id="gradeSubjectError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="gradeValue" data-translate="grade_value">📊 الدرجة</label>
+                    <input type="number" id="gradeValue" min="0" max="100" data-translate-placeholder="grade_placeholder">
+                    <div class="error-message" id="gradeValueError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="gradeDate" data-translate="date">📅 التاريخ</label>
+                    <input type="date" id="gradeDate">
+                    <div class="error-message" id="gradeDateError"></div>
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="addGrade()" data-translate="add_grade">➕ إضافة درجة</button>
+            <div class="search-box">
+                <input type="text" id="gradeSearch" data-translate-placeholder="search_grades" onkeyup="displayGrades()">
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th data-translate="student">👤 الطالب</th>
+                        <th data-translate="subject">📚 المادة</th>
+                        <th data-translate="grade">📊 الدرجة</th>
+                        <th data-translate="date">📅 التاريخ</th>
+                        <th data-translate="actions">⚙️ الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="gradesTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- إدارة الحضور -->
+        <div id="attendance" class="tab-content">
+            <h2 data-translate="attendance_management">📅 إدارة الحضور</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="attendanceDate" data-translate="date">📅 التاريخ</label>
+                    <input type="date" id="attendanceDate">
+                </div>
+                <div class="form-group">
+                    <label for="attendanceClass" data-translate="class">🏫 الصف</label>
+                    <select id="attendanceClass">
+                        <option value="" data-translate="select_class">اختر الصف</option>
+                        <option value="الأول" data-translate="first_grade">الأول</option>
+                        <option value="الثاني" data-translate="second_grade">الثاني</option>
+                        <option value="الثالث" data-translate="third_grade">الثالث</option>
+                        <option value="الرابع" data-translate="fourth_grade">الرابع</option>
+                        <option value="الخامس" data-translate="fifth_grade">الخامس</option>
+                        <option value="السادس" data-translate="sixth_grade">السادس</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn" onclick="loadAttendanceList()" data-translate="load_attendance">📋 تحميل قائمة الحضور</button>
+            <div id="attendanceList"></div>
+            <button class="btn btn-success" onclick="saveAttendance()" data-translate="save_attendance" style="display: none;" id="saveAttendanceBtn">💾 حفظ الحضور</button>
+        </div>
+
+        <!-- التقارير -->
+        <div id="reports" class="tab-content">
+            <h2 data-translate="reports_title">📋 التقارير</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reportType" data-translate="report_type">📊 نوع التقرير</label>
+                    <select id="reportType">
+                        <option value="students" data-translate="students_report">تقرير الطلاب</option>
+                        <option value="teachers" data-translate="teachers_report">تقرير المعلمين</option>
+                        <option value="grades" data-translate="grades_report">تقرير الدرجات</option>
+                        <option value="attendance" data-translate="attendance_report">تقرير الحضور</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reportClass" data-translate="class_filter">🏫 فلتر الصف (اختياري)</label>
+                    <select id="reportClass">
+                        <option value="" data-translate="all_classes">جميع الصفوف</option>
+                        <option value="الأول" data-translate="first_grade">الأول</option>
+                        <option value="الثاني" data-translate="second_grade">الثاني</option>
+                        <option value="الثالث" data-translate="third_grade">الثالث</option>
+                        <option value="الرابع" data-translate="fourth_grade">الرابع</option>
+                        <option value="الخامس" data-translate="fifth_grade">الخامس</option>
+                        <option value="السادس" data-translate="sixth_grade">السادس</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn" onclick="generateReport()" data-translate="generate_report">📊 إنشاء التقرير</button>
+            <button class="btn" onclick="printReport()" data-translate="print_report">🖨️ طباعة التقرير</button>
+            <div id="reportContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal for editing -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle" data-translate="edit">تعديل</h2>
+            <div id="modalContent"></div>
+            <button class="btn btn-success" onclick="saveEdit()" data-translate="save">حفظ</button>
+            <button class="btn btn-danger" onclick="closeModal()" data-translate="cancel">إلغاء</button>
+        </div>
+    </div>
+
+    <script>
+        // Translation object
+        const translations = {
+            ar: {
+                page_title: "نظام إدارة المدرسة المطور",
+                school_name: "🎓 المدرسة",
+                dashboard: "📊 لوحة التحكم",
+                students: "👥 الطلاب",
+                teachers: "👨‍🏫 المعلمون",
+                grades: "📝 الدرجات",
+                attendance: "📅 الحضور",
+                reports: "📋 التقارير",
+                main_title: "🎓 نظام إدارة المدرسة المطور",
+                main_subtitle: "✨ نظام شامل لإدارة الطلاب والمعلمين والدرجات مع ميزات متقدمة",
+                dashboard_title: "📊 لوحة التحكم الرئيسية",
+                total_students: "👥 إجمالي الطلاب",
+                total_teachers: "👨‍🏫 إجمالي المعلمين",
+                avg_grade: "📊 متوسط الدرجات",
+                attendance_rate: "📈 معدل الحضور",
+                students_management: "👥 إدارة الطلاب",
+                student_name: "👤 اسم الطالب",
+                student_name_placeholder: "أدخل اسم الطالب الكامل",
+                age: "🎂 العمر",
+                age_placeholder: "أدخل العمر",
+                class: "🏫 الصف",
+                select_class: "اختر الصف",
+                first_grade: "الأول",
+                second_grade: "الثاني",
+                third_grade: "الثالث",
+                fourth_grade: "الرابع",
+                fifth_grade: "الخامس",
+                sixth_grade: "السادس",
+                phone: "📞 رقم الهاتف",
+                phone_placeholder: "رقم الهاتف",
+                add_student: "➕ إضافة طالب",
+                search_students: "🔍 البحث بالاسم أو الصف...",
+                name: "👤 الاسم",
+                actions: "⚙️ الإجراءات",
+                teachers_management: "👨‍🏫 إدارة المعلمين",
+                teacher_name: "👤 اسم المعلم",
+                teacher_name_placeholder: "أدخل اسم المعلم الكامل",
+                subject: "📚 المادة",
+                subject_placeholder: "أدخل المادة",
+                email: "📧 البريد الإلكتروني",
+                email_placeholder: "أدخل البريد الإلكتروني",
+                add_teacher: "➕ إضافة معلم",
+                search_teachers: "🔍 البحث بالاسم أو المادة...",
+                grades_management: "📝 إدارة الدرجات",
+                select_student: "👤 اختر الطالب",
+                select_student_option: "اختر الطالب",
+                grade_value: "📊 الدرجة",
+                grade_placeholder: "أدخل الدرجة (0-100)",
+                date: "📅 التاريخ",
+                add_grade: "➕ إضافة درجة",
+                search_grades: "🔍 البحث بالطالب أو المادة...",
+                student: "👤 الطالب",
+                grade: "📊 الدرجة",
+                attendance_management: "📅 إدارة الحضور",
+                load_attendance: "📋 تحميل قائمة الحضور",
+                save_attendance: "💾 حفظ الحضور",
+                reports_title: "📋 التقارير",
+                report_type: "📊 نوع التقرير",
+                students_report: "تقرير الطلاب",
+                teachers_report: "تقرير المعلمين",
+                grades_report: "تقرير الدرجات",
+                attendance_report: "تقرير الحضور",
+                class_filter: "🏫 فلتر الصف (اختياري)",
+                all_classes: "جميع الصفوف",
+                generate_report: "📊 إنشاء التقرير",
+                print_report: "🖨️ طباعة التقرير",
+                edit: "تعديل",
+                save: "حفظ",
+                cancel: "إلغاء",
+                delete: "حذف",
+                present: "حاضر",
+                absent: "غائب",
+                success_add: "تم الإضافة بنجاح!",
+                success_update: "تم التحديث بنجاح!",
+                success_delete: "تم الحذف بنجاح!",
+                error_fill_fields: "يرجى ملء جميع الحقول المطلوبة",
+                error_invalid_email: "يرجى إدخال بريد إلكتروني صحيح",
+                error_invalid_phone: "يرجى إدخال رقم هاتف صحيح",
+                error_invalid_age: "يرجى إدخال عمر صحيح",
+                error_invalid_grade: "يرجى إدخال درجة صحيحة (0-100)",
+                confirm_delete: "هل أنت متأكد من الحذف؟"
+            },
+            en: {
+                page_title: "Advanced School Management System",
+                school_name: "🎓 School",
+                dashboard: "📊 Dashboard",
+                students: "👥 Students",
+                teachers: "👨‍🏫 Teachers",
+                grades: "📝 Grades",
+                attendance: "📅 Attendance",
+                reports: "📋 Reports",
+                main_title: "🎓 Advanced School Management System",
+                main_subtitle: "✨ Comprehensive system for managing students, teachers, and grades with advanced features",
+                dashboard_title: "📊 Main Dashboard",
+                total_students: "👥 Total Students",
+                total_teachers: "👨‍🏫 Total Teachers",
+                avg_grade: "📊 Average Grade",
+                attendance_rate: "📈 Attendance Rate",
+                students_management: "👥 Students Management",
+                student_name: "👤 Student Name",
+                student_name_placeholder: "Enter full student name",
+                age: "🎂 Age",
+                age_placeholder: "Enter age",
+                class: "🏫 Class",
+                select_class: "Select Class",
+                first_grade: "First",
+                second_grade: "Second",
+                third_grade: "Third",
+                fourth_grade: "Fourth",
+                fifth_grade: "Fifth",
+                sixth_grade: "Sixth",
+                phone: "📞 Phone Number",
+                phone_placeholder: "Phone number",
+                add_student: "➕ Add Student",
+                search_students: "🔍 Search by name or class...",
+                name: "👤 Name",
+                actions: "⚙️ Actions",
+                teachers_management: "👨‍🏫 Teachers Management",
+                teacher_name: "👤 Teacher Name",
+                teacher_name_placeholder: "Enter full teacher name",
+                subject: "📚 Subject",
+                subject_placeholder: "Enter subject",
+                email: "📧 Email",
+                email_placeholder: "Enter email address",
+                add_teacher: "➕ Add Teacher",
+                search_teachers: "🔍 Search by name or subject...",
+                grades_management: "📝 Grades Management",
+                select_student: "👤 Select Student",
+                select_student_option: "Select Student",
+                grade_value: "📊 Grade",
+                grade_placeholder: "Enter grade (0-100)",
+                date: "📅 Date",
+                add_grade: "➕ Add Grade",
+                search_grades: "🔍 Search by student or subject...",
+                student: "👤 Student",
+                grade: "📊 Grade",
+                attendance_management: "📅 Attendance Management",
+                load_attendance: "📋 Load Attendance List",
+                save_attendance: "💾 Save Attendance",
+                reports_title: "📋 Reports",
+                report_type: "📊 Report Type",
+                students_report: "Students Report",
+                teachers_report: "Teachers Report",
+                grades_report: "Grades Report",
+                attendance_report: "Attendance Report",
+                class_filter: "🏫 Class Filter (Optional)",
+                all_classes: "All Classes",
+                generate_report: "📊 Generate Report",
+                print_report: "🖨️ Print Report",
+                edit: "Edit",
+                save: "Save",
+                cancel: "Cancel",
+                delete: "Delete",
+                present: "Present",
+                absent: "Absent",
+                success_add: "Added successfully!",
+                success_update: "Updated successfully!",
+                success_delete: "Deleted successfully!",
+                error_fill_fields: "Please fill all required fields",
+                error_invalid_email: "Please enter a valid email address",
+                error_invalid_phone: "Please enter a valid phone number",
+                error_invalid_age: "Please enter a valid age",
+                error_invalid_grade: "Please enter a valid grade (0-100)",
+                confirm_delete: "Are you sure you want to delete?"
+            }
+        };
+
+        // Current language and theme
+        let currentLanguage = localStorage.getItem('language') || 'ar';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLanguage();
+            initializeTheme();
+            initializeCountryCodes();
+            loadData();
+            updateDashboard();
+        });
+
+        // Language functions
+        function initializeLanguage() {
+            document.getElementById('languageSelector').value = currentLanguage;
+            applyLanguage(currentLanguage);
+        }
+
+        function applyLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            
+            // Update document direction and language
+            document.documentElement.lang = lang;
+            document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
+            // Update all translatable elements
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update placeholders
+            const placeholderElements = document.querySelectorAll('[data-translate-placeholder]');
+            placeholderElements.forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+            
+            // Update page title
+            document.title = translations[lang].page_title;
+        }
+
+        // Theme functions
+        function initializeTheme() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+            themeToggle.title = currentTheme === 'light' ? 
+                (currentLanguage === 'ar' ? 'تبديل إلى الوضع الداكن' : 'Switch to Dark Mode') :
+                (currentLanguage === 'ar' ? 'تبديل إلى الوضع الفاتح' : 'Switch to Light Mode');
+        }
+
+        // Event listeners
+        document.getElementById('languageSelector').addEventListener('change', function() {
+            applyLanguage(this.value);
+            // Refresh displays to apply language changes
+            displayStudents();
+            displayTeachers();
+            displayGrades();
+            updateDashboard();
+        });
+
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        // Sidebar toggle functionality
+        document.getElementById('sidebarToggler').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+        });
+
+        // Data storage
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+        let teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+        let grades = JSON.parse(localStorage.getItem('grades')) || [];
+        let attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+
+        // Country codes for phone numbers
+        const countryCodes = [
+            { code: '+966', country: 'السعودية / Saudi Arabia' },
+            { code: '+971', country: 'الإمارات / UAE' },
+            { code: '+965', country: 'الكويت / Kuwait' },
+            { code: '+974', country: 'قطر / Qatar' },
+            { code: '+973', country: 'البحرين / Bahrain' },
+            { code: '+968', country: 'عمان / Oman' },
+            { code: '+962', country: 'الأردن / Jordan' },
+            { code: '+961', country: 'لبنان / Lebanon' },
+            { code: '+963', country: 'سوريا / Syria' },
+            { code: '+964', country: 'العراق / Iraq' },
+            { code: '+20', country: 'مصر / Egypt' },
+            { code: '+212', country: 'المغرب / Morocco' },
+            { code: '+213', country: 'الجزائر / Algeria' },
+            { code: '+216', country: 'تونس / Tunisia' },
+            { code: '+218', country: 'ليبيا / Libya' },
+            { code: '+249', country: 'السودان / Sudan' },
+            { code: '+1', country: 'الولايات المتحدة / USA' },
+            { code: '+44', country: 'المملكة المتحدة / UK' },
+            { code: '+33', country: 'فرنسا / France' },
+            { code: '+49', country: 'ألمانيا / Germany' }
+        ];
+
+        function initializeCountryCodes() {
+            const studentCountryCode = document.getElementById('studentCountryCode');
+            const teacherCountryCode = document.getElementById('teacherCountryCode');
+            
+            countryCodes.forEach(country => {
+                const option1 = document.createElement('option');
+                option1.value = country.code;
+                option1.textContent = `${country.code} ${country.country}`;
+                studentCountryCode.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = country.code;
+                option2.textContent = `${country.code} ${country.country}`;
+                teacherCountryCode.appendChild(option2);
+            });
+            
+            // Set default to Saudi Arabia
+            studentCountryCode.value = '+966';
+            teacherCountryCode.value = '+966';
+        }
+
+        // Validation functions
+        function validateName(name) {
+            return name.trim().length >= 2;
+        }
+
+        function validateAge(age) {
+            return age >= 5 && age <= 25;
+        }
+
+        function validatePhone(phone) {
+            return /^[0-9]{8,15}$/.test(phone.replace(/\s/g, ''));
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validateGrade(grade) {
+            return grade >= 0 && grade <= 100;
+        }
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            const inputElement = document.getElementById(elementId.replace('Error', ''));
+            
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            inputElement.classList.add('invalid');
+        }
+
+        function clearError(elementId) {
+            const errorElement = document.getElementById(elementId);
+            const inputElement = document.getElementById(elementId.replace('Error', ''));
+            
+            errorElement.style.display = 'none';
+            inputElement.classList.remove('invalid');
+        }
+
+        function clearAllErrors(prefix) {
+            const errorElements = document.querySelectorAll(`[id^="${prefix}"][id$="Error"]`);
+            errorElements.forEach(element => {
+                element.style.display = 'none';
+                const inputId = element.id.replace('Error', '');
+                const inputElement = document.getElementById(inputId);
+                if (inputElement) {
+                    inputElement.classList.remove('invalid');
+                }
+            });
+        }
+
+        // Alert functions
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} show`;
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // Student management functions
+        function addStudent() {
+            clearAllErrors('student');
+            
+            const name = document.getElementById('studentName').value.trim();
+            const age = parseInt(document.getElementById('studentAge').value);
+            const studentClass = document.getElementById('studentClass').value;
+            const phone = document.getElementById('studentPhone').value.trim();
+            const countryCode = document.getElementById('studentCountryCode').value;
+            
+            let isValid = true;
+            
+            if (!validateName(name)) {
+                showError('studentNameError', translations[currentLanguage].error_fill_fields);
+                isValid = false;
+            }
+            
+            if (!validateAge(age)) {
+                showError('studentAgeError', translations[currentLanguage].error_invalid_age);
+                isValid = false;
+            }
+            
+            if (!studentClass) {
+                showError('studentClassError', translations[currentLanguage].error_fill_fields);
+                isValid = false;
+            }
+            
+            if (!validatePhone(phone)) {
+                showError('studentPhoneError', translations[currentLanguage].error_invalid_phone);
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            const student = {
+                id: Date.now(),
+                name,
+                age,
+                class: studentClass,
+                phone: `${countryCode} ${phone}`
+            };
+            
+            students.push(student);
+            saveData();
+            displayStudents();
+            updateDashboard();
+            updateGradeStudentOptions();
+            
+            // Clear form
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentAge').value = '';
+            document.getElementById('studentClass').value = '';
+            document.getElementById('studentPhone').value = '';
+            
+            showAlert(translations[currentLanguage].success_add);
+        }
+
+        function displayStudents() {
+            const tbody = document.getElementById('studentsTableBody');
+            const searchTerm = document.getElementById('studentSearch').value.toLowerCase();
+            
+            const filteredStudents = students.filter(student => 
+                student.name.toLowerCase().includes(searchTerm) ||
+                student.class.toLowerCase().includes(searchTerm)
+            );
+            
+            tbody.innerHTML = filteredStudents.map(student => `
+                <tr>
+                    <td>${student.name}</td>
+                    <td>${student.age}</td>
+                    <td>${student.class}</td>
+                    <td>${student.phone}</td>
+                    <td>
+                        <button class="btn btn-small" onclick="editStudent(${student.id})">${translations[currentLanguage].edit}</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteStudent(${student.id})">${translations[currentLanguage].delete}</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function editStudent(id) {
+            const student = students.find(s => s.id === id);
+            if (!student) return;
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="form-group">
+                    <label>${translations[currentLanguage].student_name}</label>
+                    <input type="text" id="editStudentName" value="${student.name}">
+                </div>
+                <div class="form-group">
+                    <label>${translations[currentLanguage].age}</label>
+                    <input type="number" id="editStudentAge" value="${student.age}">
+                </div>
+                <div class="form-group">
+                    <label>${translations[currentLanguage].class}</label>
+                    <select id="editStudentClass">
+                        <option value="الأول" ${student.class === 'الأول' ? 'selected' : ''}>${translations[currentLanguage].first_grade}</option>
+                        <option value="الثاني" ${student.class === 'الثاني' ? 'selected' : ''}>${translations[currentLanguage].second_grade}</option>
+                        <option value="الثالث" ${student.class === 'الثالث' ? 'selected' : ''}>${translations[currentLanguage].third_grade}</option>
+                        <option value="الرابع" ${student.class === 'الرابع' ? 'selected' : ''}>${translations[currentLanguage].fourth_grade}</option>
+                        <option value="الخامس" ${student.class === 'الخامس' ? 'selected' : ''}>${translations[currentLanguage].fifth_grade}</option>
+                        <option value="السادس" ${student.class === 'السادس' ? 'selected' : ''}>${translations[currentLanguage].sixth_grade}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>${translations[currentLanguage].phone}</label>
+                    <input type="text" id="editStudentPhone" value="${student.phone}">
+                </div>
+            `;
+            
+            document.getElementById('editModal').classList.add('show');
+            window.currentEditId = id;
+            window.currentEditType = 'student';
+        }
+
+        function deleteStudent(id) {
+            if (confirm(translations[currentLanguage].confirm_delete)) {
+                students = students.filter(s => s.id !== id);
+                grades = grades.filter(g => g.studentId !== id);
+                attendance = attendance.filter(a => a.studentId !== id);
+                saveData();
+                displayStudents();
+                displayGrades();
+                updateDashboard();
+                updateGradeStudentOptions();
+                showAlert(translations[currentLanguage].success_delete);
+            }
+        }
+
+        // Teacher management functions
+        function addTeacher() {
+            clearAllErrors('teacher');
+            
+            const name = document.getElementById('teacherName').value.trim();
+            const subject = document.getElementById('teacherSubject').value.trim();
+            const phone = document.getElementById('teacherPhone').value.trim();
+            const countryCode = document.getElementById('teacherCountryCode').value;
+            const email = document.getElementById('teacherEmail').value.trim();
+            
+            let isValid = true;
+            
+            if (!validateName(name)) {
+                showError('teacherNameError', translations[currentLanguage].error_fill_fields);
+                isValid = false;
+            }
+            
+            if (!subject) {
+                showError('teacherSubjectError', translations[currentLanguage].error_fill_fields);
+                isValid = false;
+            }
+            
+            if (!validatePhone(phone)) {
+                showError('teacherPhoneError', translations[currentLanguage].error_invalid_phone);
+                isValid = false;
+            }
+            
+            if (!validateEmail(email)) {
+                showError('teacherEmailError', translations[currentLanguage].error_invalid_email);
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            const teacher = {
+                id: Date.now(),
+                name,
+                subject,
+                phone: `${countryCode} ${phone}`,
+                email
+            };
+            
+            teachers.push(teacher);
+            saveData();
+            displayTeachers();
+            updateDashboard();
+            
+            // Clear form
+            document.getElementById('teacherName').value = '';
+            document.getElementById('teacherSubject').value = '';
+            document.getElementById('teacherPhone').value = '';
+            document.getElementById('teacherEmail').value = '';
+            
+            showAlert(translations[currentLanguage].success_add);
+        }
+
+        function displayTeachers() {
+            const tbody = document.getElementById('teachersTableBody');
+            const searchTerm = document.getElementById('teacherSearch').value.toLowerCase();
+            
+            const filteredTeachers = teachers.filter(teacher => 
+                teacher.name.toLowerCase().includes(searchTerm) ||
+                teacher.subject.toLowerCase().includes(searchTerm)
+            );
+            
+            tbody.innerHTML = filteredTeachers.map(teacher => `
+                <tr>
+                    <td>${teacher.name}</td>
+                    <td>${teacher.subject}</td>
+                    <td>${teacher.phone}</td>
+                    <td>${teacher.email}</td>
+                    <td>
+                        <button class="btn btn-small" onclick="editTeacher(${teacher.id})">${translations[currentLanguage].edit}</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteTeacher(${teacher.id})">${translations[currentLanguage].delete}</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function editTeacher(id) {
+            const teacher = teachers.find(t => t.id === id);
+            if (!teacher) return;
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="form-group">
+                    <label>${translations[currentLanguage].teacher_name}</label>
+                    <input type="text" id="editTeacherName" value="${teacher.name}">
+                </div>
+                <div class="form-group">
+                    <label>${translations[currentLanguage].subject}</label>
+                    <input type="text" id="editTeacherSubject" value="${teacher.subject}">
+                </div>
+                <div class="form-group">
+                    <label>${translations[currentLanguage].phone}</label>
+                    <input type="text" id="editTeacherPhone" value="${teacher.phone}">
+                </div>
+                <div class="form-group">
+                    <label>${translations[currentLanguage].email}</label>
+                    <input type="email" id="editTeacherEmail" value="${teacher.email}">
+                </div>
+            `;
+            
+            document.getElementById('editModal').classList.add('show');
+            window.currentEditId = id;
+            window.currentEditType = 'teacher';
+        }
+
+        function deleteTeacher(id) {
+            if (confirm(translations[currentLanguage].confirm_delete)) {
+                teachers = teachers.filter(t => t.id !== id);
+                saveData();
+                displayTeachers();
+                updateDashboard();
+                showAlert(translations[currentLanguage].success_delete);
+            }
+        }
+
+        // Grade management functions
+        function updateGradeStudentOptions() {
+            const select = document.getElementById('gradeStudent');
+            select.innerHTML = `<option value="">${translations[currentLanguage].select_student_option}</option>`;
+            
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.name} - ${student.class}`;
+                select.appendChild(option);
+            });
+        }
+
+        function addGrade() {
+            clearAllErrors('grade');
+            
+            const studentId = parseInt(document.getElementById('gradeStudent').value);
+            const subject = document.getElementById('gradeSubject').value.trim();
+            const gradeValue = parseFloat(document.getElementById('gradeValue').value);
+            const date = document.getElementById('gradeDate').value;
+            
+            let isValid = true;
+            
+            if (!studentId) {
+                showError('gradeStudentError', translations[currentLanguage].error_fill_fields);
+                isValid = false;
+            }
+            
+            if (!subject) {
+                showError('gradeSubjectError', translations[currentLanguage].error_fill_fields);
+                isValid = false;
+            }
+            
+            if (!validateGrade(gradeValue)) {
+                showError('gradeValueError', translations[currentLanguage].error_invalid_grade);
+                isValid = false;
+            }
+            
+            if (!date) {
+                showError('gradeDateError', translations[currentLanguage].error_fill_fields);
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            const student = students.find(s => s.id === studentId);
+            const grade = {
+                id: Date.now(),
+                studentId,
+                studentName: student.name,
+                subject,
+                grade: gradeValue,
+                date
+            };
+            
+            grades.push(grade);
+            saveData();
+            displayGrades();
+            updateDashboard();
+            
+            // Clear form
+            document.getElementById('gradeStudent').value = '';
+            document.getElementById('gradeSubject').value = '';
+            document.getElementById('gradeValue').value = '';
+            document.getElementById('gradeDate').value = '';
+            
+            showAlert(translations[currentLanguage].success_add);
+        }
+
+        function displayGrades() {
+            const tbody = document.getElementById('gradesTableBody');
+            const searchTerm = document.getElementById('gradeSearch').value.toLowerCase();
+            
+            const filteredGrades = grades.filter(grade => 
+                grade.studentName.toLowerCase().includes(searchTerm) ||
+                grade.subject.toLowerCase().includes(searchTerm)
+            );
+            
+            tbody.innerHTML = filteredGrades.map(grade => `
+                <tr>
+                    <td>${grade.studentName}</td>
+                    <td>${grade.subject}</td>
+                    <td>${grade.grade}</td>
+                    <td>${grade.date}</td>
+                    <td>
+                        <button class="btn btn-small" onclick="editGrade(${grade.id})">${translations[currentLanguage].edit}</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteGrade(${grade.id})">${translations[currentLanguage].delete}</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function editGrade(id) {
+            const grade = grades.find(g => g.id === id);
+            if (!grade) return;
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="form-group">
+                    <label>${translations[currentLanguage].student}</label>
+                    <select id="editGradeStudent">
+                        ${students.map(student => 
+                            `<option value="${student.id}" ${student.id === grade.studentId ? 'selected' : ''}>${student.name} - ${student.class}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>${translations[currentLanguage].subject}</label>
+                    <input type="text" id="editGradeSubject" value="${grade.subject}">
+                </div>
+                <div class="form-group">
+                    <label>${translations[currentLanguage].grade_value}</label>
+                    <input type="number" id="editGradeValue" min="0" max="100" value="${grade.grade}">
+                </div>
+                <div class="form-group">
+                    <label>${translations[currentLanguage].date}</label>
+                    <input type="date" id="editGradeDate" value="${grade.date}">
+                </div>
+            `;
+            
+            document.getElementById('editModal').classList.add('show');
+            window.currentEditId = id;
+            window.currentEditType = 'grade';
+        }
+
+        function deleteGrade(id) {
+            if (confirm(translations[currentLanguage].confirm_delete)) {
+                grades = grades.filter(g => g.id !== id);
+                saveData();
+                displayGrades();
+                updateDashboard();
+                showAlert(translations[currentLanguage].success_delete);
+            }
+        }
+
+        // Attendance management functions
+        function loadAttendanceList() {
+            const date = document.getElementById('attendanceDate').value;
+            const selectedClass = document.getElementById('attendanceClass').value;
+            
+            if (!date || !selectedClass) {
+                showAlert(translations[currentLanguage].error_fill_fields, 'error');
+                return;
+            }
+            
+            const classStudents = students.filter(student => student.class === selectedClass);
+            const attendanceList = document.getElementById('attendanceList');
+            
+            attendanceList.innerHTML = classStudents.map(student => {
+                const existingAttendance = attendance.find(a => 
+                    a.studentId === student.id && a.date === date
+                );
+                const status = existingAttendance ? existingAttendance.status : 'present';
+                
+                return `
+                    <div class="attendance-item">
+                        <span>${student.name}</span>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="attendance_${student.id}" value="present" ${status === 'present' ? 'checked' : ''}>
+                                ${translations[currentLanguage].present}
+                            </label>
+                            <label>
+                                <input type="radio" name="attendance_${student.id}" value="absent" ${status === 'absent' ? 'checked' : ''}>
+                                ${translations[currentLanguage].absent}
+                            </label>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('saveAttendanceBtn').style.display = 'block';
+        }
+
+        function saveAttendance() {
+            const date = document.getElementById('attendanceDate').value;
+            const selectedClass = document.getElementById('attendanceClass').value;
+            const classStudents = students.filter(student => student.class === selectedClass);
+            
+            classStudents.forEach(student => {
+                const radioButtons = document.getElementsByName(`attendance_${student.id}`);
+                const status = Array.from(radioButtons).find(radio => radio.checked)?.value || 'present';
+                
+                // Remove existing attendance for this student and date
+                attendance = attendance.filter(a => !(a.studentId === student.id && a.date === date));
+                
+                // Add new attendance record
+                attendance.push({
+                    id: Date.now() + student.id,
+                    studentId: student.id,
+                    studentName: student.name,
+                    class: student.class,
+                    date,
+                    status
+                });
+            });
+            
+            saveData();
+            updateDashboard();
+            showAlert(translations[currentLanguage].success_add);
+        }
+
+        // Report generation functions
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const classFilter = document.getElementById('reportClass').value;
+            const reportContent = document.getElementById('reportContent');
+            
+            let content = '';
+            
+            switch (reportType) {
+                case 'students':
+                    content = generateStudentsReport(classFilter);
+                    break;
+                case 'teachers':
+                    content = generateTeachersReport();
+                    break;
+                case 'grades':
+                    content = generateGradesReport(classFilter);
+                    break;
+                case 'attendance':
+                    content = generateAttendanceReport(classFilter);
+                    break;
+            }
+            
+            reportContent.innerHTML = content;
+        }
+
+        function generateStudentsReport(classFilter) {
+            const filteredStudents = classFilter ? 
+                students.filter(s => s.class === classFilter) : students;
+            
+            return `
+                <h3>${translations[currentLanguage].students_report}</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>${translations[currentLanguage].name}</th>
+                            <th>${translations[currentLanguage].age}</th>
+                            <th>${translations[currentLanguage].class}</th>
+                            <th>${translations[currentLanguage].phone}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredStudents.map(student => `
+                            <tr>
+                                <td>${student.name}</td>
+                                <td>${student.age}</td>
+                                <td>${student.class}</td>
+                                <td>${student.phone}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <p><strong>${translations[currentLanguage].total_students}: ${filteredStudents.length}</strong></p>
+            `;
+        }
+
+        function generateTeachersReport() {
+            return `
+                <h3>${translations[currentLanguage].teachers_report}</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>${translations[currentLanguage].name}</th>
+                            <th>${translations[currentLanguage].subject}</th>
+                            <th>${translations[currentLanguage].phone}</th>
+                            <th>${translations[currentLanguage].email}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${teachers.map(teacher => `
+                            <tr>
+                                <td>${teacher.name}</td>
+                                <td>${teacher.subject}</td>
+                                <td>${teacher.phone}</td>
+                                <td>${teacher.email}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <p><strong>${translations[currentLanguage].total_teachers}: ${teachers.length}</strong></p>
+            `;
+        }
+
+        function generateGradesReport(classFilter) {
+            let filteredGrades = grades;
+            if (classFilter) {
+                const classStudentIds = students.filter(s => s.class === classFilter).map(s => s.id);
+                filteredGrades = grades.filter(g => classStudentIds.includes(g.studentId));
+            }
+            
+            const avgGrade = filteredGrades.length > 0 ? 
+                (filteredGrades.reduce((sum, g) => sum + g.grade, 0) / filteredGrades.length).toFixed(2) : 0;
+            
+            return `
+                <h3>${translations[currentLanguage].grades_report}</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>${translations[currentLanguage].student}</th>
+                            <th>${translations[currentLanguage].subject}</th>
+                            <th>${translations[currentLanguage].grade}</th>
+                            <th>${translations[currentLanguage].date}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredGrades.map(grade => `
+                            <tr>
+                                <td>${grade.studentName}</td>
+                                <td>${grade.subject}</td>
+                                <td>${grade.grade}</td>
+                                <td>${grade.date}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <p><strong>${translations[currentLanguage].avg_grade}: ${avgGrade}</strong></p>
+            `;
+        }
+
+        function generateAttendanceReport(classFilter) {
+            let filteredAttendance = attendance;
+            if (classFilter) {
+                filteredAttendance = attendance.filter(a => a.class === classFilter);
+            }
+            
+            const totalRecords = filteredAttendance.length;
+            const presentRecords = filteredAttendance.filter(a => a.status === 'present').length;
+            const attendanceRate = totalRecords > 0 ? ((presentRecords / totalRecords) * 100).toFixed(1) : 0;
+            
+            return `
+                <h3>${translations[currentLanguage].attendance_report}</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>${translations[currentLanguage].student}</th>
+                            <th>${translations[currentLanguage].class}</th>
+                            <th>${translations[currentLanguage].date}</th>
+                            <th>الحالة / Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredAttendance.map(record => `
+                            <tr>
+                                <td>${record.studentName}</td>
+                                <td>${record.class}</td>
+                                <td>${record.date}</td>
+                                <td>${record.status === 'present' ? translations[currentLanguage].present : translations[currentLanguage].absent}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <p><strong>${translations[currentLanguage].attendance_rate}: ${attendanceRate}%</strong></p>
+            `;
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        // Modal functions
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+
+        function saveEdit() {
+            const editType = window.currentEditType;
+            const editId = window.currentEditId;
+            
+            if (editType === 'student') {
+                const student = students.find(s => s.id === editId);
+                student.name = document.getElementById('editStudentName').value;
+                student.age = parseInt(document.getElementById('editStudentAge').value);
+                student.class = document.getElementById('editStudentClass').value;
+                student.phone = document.getElementById('editStudentPhone').value;
+                displayStudents();
+                updateGradeStudentOptions();
+            } else if (editType === 'teacher') {
+                const teacher = teachers.find(t => t.id === editId);
+                teacher.name = document.getElementById('editTeacherName').value;
+                teacher.subject = document.getElementById('editTeacherSubject').value;
+                teacher.phone = document.getElementById('editTeacherPhone').value;
+                teacher.email = document.getElementById('editTeacherEmail').value;
+                displayTeachers();
+            } else if (editType === 'grade') {
+                const grade = grades.find(g => g.id === editId);
+                const studentId = parseInt(document.getElementById('editGradeStudent').value);
+                const student = students.find(s => s.id === studentId);
+                grade.studentId = studentId;
+                grade.studentName = student.name;
+                grade.subject = document.getElementById('editGradeSubject').value;
+                grade.grade = parseFloat(document.getElementById('editGradeValue').value);
+                grade.date = document.getElementById('editGradeDate').value;
+                displayGrades();
+            }
+            
+            saveData();
+            updateDashboard();
+            closeModal();
+            showAlert(translations[currentLanguage].success_update);
+        }
+
+        // Tab management
+        function showTab(tabName, event) {
+            // Remove active class from all tabs and buttons
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to selected tab and button
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load data for the selected tab
+            if (tabName === 'students') {
+                displayStudents();
+            } else if (tabName === 'teachers') {
+                displayTeachers();
+            } else if (tabName === 'grades') {
+                displayGrades();
+                updateGradeStudentOptions();
+            } else if (tabName === 'dashboard') {
+                updateDashboard();
+            }
+        }
+
+        // Dashboard update
+        function updateDashboard() {
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('totalTeachers').textContent = teachers.length;
+            
+            const avgGrade = grades.length > 0 ? 
+                (grades.reduce((sum, grade) => sum + grade.grade, 0) / grades.length).toFixed(1) : 0;
+            document.getElementById('avgGrade').textContent = avgGrade;
+            
+            const totalAttendanceRecords = attendance.length;
+            const presentRecords = attendance.filter(a => a.status === 'present').length;
+            const attendanceRate = totalAttendanceRecords > 0 ? 
+                ((presentRecords / totalAttendanceRecords) * 100).toFixed(1) : 0;
+            document.getElementById('attendanceRate').textContent = `${attendanceRate}%`;
+        }
+
+        // Data persistence
+        function saveData() {
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('teachers', JSON.stringify(teachers));
+            localStorage.setItem('grades', JSON.stringify(grades));
+            localStorage.setItem('attendance', JSON.stringify(attendance));
+        }
+
+        function loadData() {
+            students = JSON.parse(localStorage.getItem('students')) || [];
+            teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+            grades = JSON.parse(localStorage.getItem('grades')) || [];
+            attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+        }
+
+        // Set today's date as default for date inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('gradeDate').value = today;
+            document.getElementById('attendanceDate').value = today;
+        });
+    </script>
+</body>
+</html>
