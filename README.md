@@ -8,7 +8,7 @@
 
 ---
 <div align="center">
-  # Advanced School Management System
+  ### Advanced School Management System
 </div>
 
 
