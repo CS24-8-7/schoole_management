@@ -7,8 +7,10 @@
 </div>
 
 ---
+<div align="center">
+  # Advanced School Management System
+</div>
 
-# Advanced School Management System
 
 نظام شامل لإدارة الطلاب والمعلمين والدرجات مع ميزات متقدمة ورسوم بيانية تفاعلية.
 
