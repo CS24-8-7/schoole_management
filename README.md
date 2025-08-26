@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/badge/Status-Completed_in_2022-green?logo=github" />
   <br>
 
-  <img src="https://github.com/CS24-8-7/Supermarket/blob/main/Supermarket.jpg" />
+  <img src="https://github.com/CS24-8-7/schoole_management/blob/main/Screenshot.jpg" />
 </div>
 
 ## Advanced School Management System
